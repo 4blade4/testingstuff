@@ -53,7 +53,8 @@ GUI:Notification{
 --Ghosts
 
 local Mainhubg = {
-        "Fairy",
+        "Holiday Spy",
+	"Fairy",
         "Owl",
         "Businessman",
         "Street Cat",
