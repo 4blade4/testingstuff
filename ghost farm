@@ -155,8 +155,8 @@ local backdoorb = {
 }
 
 --Locals
-local ghostN = "Holiday Spy"
-local ghostN2 = "Gingerbread"
+local ghostN = nil
+local ghostN2 = nil
 
 local bossN = nil
 
