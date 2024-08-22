@@ -53,7 +53,8 @@ GUI:Notification{
 --Ghosts
 
 local Mainhubg = {
-        "Holiday Spy",
+        "Gingerbread",
+	"Holiday Spy",
 	"Fairy",
         "Owl",
         "Businessman",
@@ -154,8 +155,8 @@ local backdoorb = {
 }
 
 --Locals
-local ghostN = nil
-local ghostN2 = nil
+local ghostN = "Holiday Spy"
+local ghostN2 = "Gingerbread"
 
 local bossN = nil
 
