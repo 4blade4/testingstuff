@@ -41,7 +41,7 @@ local function a(b, c)
     setfenv(c, e)
     return c
 end
-local power = 2
+local power = 5
 local usrinput = game:GetService("UserInputService")
 local g = {}
 local h = Instance.new("Model", game:GetService("Lighting"))
