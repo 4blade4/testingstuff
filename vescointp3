@@ -1,0 +1,27 @@
+-- Reference to the folder containing the parts to move
+local itemsFolder = workspace.placeFolders.items
+local targetPart = workspace.placeFolders.entityManifestCollection.BladeDiamondMaster.hitbox
+
+-- Function to recursively search for parts named "coin piece" in a folder
+local function teleportCoinPieces(folder)
+    -- Iterate through all children in the folder
+    for _, child in ipairs(folder:GetChildren()) do
+        -- If the child is a BasePart and has the name "coin piece"
+        if child:IsA("BasePart") and child.Name == "coin piece" then
+            -- Set the CFrame of each "coin piece" to match the CFrame of the target part
+            child.CFrame = targetPart.CFrame
+        elseif child:IsA("Folder") then
+            -- Recursively call the function if the child is a folder
+            teleportCoinPieces(child)
+        end
+    end
+end
+
+-- Check if the target part exists
+if targetPart then
+    -- Start the recursive search and teleport process
+    teleportCoinPieces(itemsFolder)
+else
+    -- Print a warning if the target part is not found
+    warn("Target part (hitbox) not found!")
+end
