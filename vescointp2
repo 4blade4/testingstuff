@@ -1,0 +1,18 @@
+-- Reference to the folder containing the parts to move
+local itemsFolder = workspace.placeFolders.items
+local targetPart = workspace.placeFolders.entityManifestCollection.BladeDiamondMaster.hitbox
+
+-- Check if the target part exists
+if targetPart then
+    -- Iterate through all children in the items folder
+    for _, child in ipairs(itemsFolder:GetChildren()) do
+        -- Check if the child is a BasePart and has the name "coin piece"
+        if child:IsA("BasePart") and child.Name == "coin piece" then
+            -- Set the CFrame of each part to match the CFrame of the target part
+            child.CFrame = targetPart.CFrame
+        end
+    end
+else
+    -- Print a warning if the target part is not found
+    warn("Target part (hitbox) not found!")
+end
