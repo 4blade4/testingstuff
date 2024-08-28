@@ -18,10 +18,11 @@ if game.GameId == 833209132 then
     local function collectItems()
         for i, v in pairs(items:GetChildren()) do
             local args = {
-              [1] = workspace.placeFolders.items:FindFirstChild("coin piece")
+                [1] = "pickUpItemRequest",
+                [2] = v
             }
             
-          game:GetService("ReplicatedStorage").network.RemoteFunction.pickUpItemRequest:InvokeServer(unpack(args))
+            game:GetService("ReplicatedStorage").network.RemoteFunction.playerRequest_pickUpItem:InvokeServer(unpack(args))
             wait(.3)
         end
     end
