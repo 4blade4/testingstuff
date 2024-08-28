@@ -1,0 +1,17 @@
+-- Reference to the parts
+local coinPiece = workspace.placeFolders.items:FindFirstChild("coin piece")
+local hitbox = workspace.placeFolders.entityManifestCollection.BladeDiamondMaster.hitbox
+
+-- Check if both parts exist
+if coinPiece and hitbox then
+    -- Set the CFrame of coinPiece to match the CFrame of hitbox
+    coinPiece.CFrame = hitbox.CFrame
+else
+    -- Print a warning if either part is not found
+    if not coinPiece then
+        warn("coin piece not found!")
+    end
+    if not hitbox then
+        warn("hitbox not found!")
+    end
+end
