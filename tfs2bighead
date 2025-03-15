@@ -1,0 +1,48 @@
+-- Function to resize and adjust the head properties
+local function resizeAndAdjustHead(head)
+    if head then
+        -- Resize the Head to 8, 8, 8
+        head.Size = Vector3.new(8, 8, 8)
+        
+        -- Disable collisions (prevent parts from getting stuck)
+        head.CanCollide = false
+        
+        -- Set the head to be massless (helps prevent physics issues)
+        head.Massless = true
+        
+        -- Make sure the head is not anchored (unless you want it anchored for some reason)
+        head.Anchored = false
+
+        print("Resized and adjusted Head to 8, 8, 8")
+    end
+end
+
+-- Get all the children of the Zombies object in the Workspace
+local zombies = workspace.Zombies:GetChildren()
+
+-- Loop through existing zombies and adjust their heads if found
+for _, zombie in pairs(zombies) do
+    -- Find and resize the first "Head"
+    local head = zombie:FindFirstChild("Head")
+    resizeAndAdjustHead(head)
+
+    -- Listen for any new heads that are added to the zombie
+    zombie.ChildAdded:Connect(function(child)
+        if child.Name == "Head" then
+            resizeAndAdjustHead(child)
+        end
+    end)
+end
+
+-- Listen for any new zombies added to the workspace
+workspace.Zombies.ChildAdded:Connect(function(zombie)
+    local head = zombie:FindFirstChild("Head")
+    resizeAndAdjustHead(head)
+
+    -- Listen for new heads added to the new zombie
+    zombie.ChildAdded:Connect(function(child)
+        if child.Name == "Head" then
+            resizeAndAdjustHead(child)
+        end
+    end)
+end)
