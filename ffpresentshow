@@ -3,9 +3,9 @@ local presents = {"Present1", "Present2", "Present3", "Present4", "Present5"}
 
 -- Function to create a BillboardGUI with a rainbow effect
 local function createBillboardESP(object)
-    -- Check if the object exists in the workspace
+    -- Ensure the object exists in the workspace
     if object and object.Parent == game.Workspace then
-        -- Create the BillboardGUI
+        -- Create the BillboardGui
         local billboard = Instance.new("BillboardGui")
         billboard.Adornee = object -- Attach the BillboardGui to the object
         billboard.Parent = object
@@ -13,7 +13,7 @@ local function createBillboardESP(object)
         billboard.StudsOffset = Vector3.new(0, 3, 0) -- Offset above the object
         billboard.AlwaysOnTop = true -- Make sure it stays on top
 
-        -- Create a TextLabel inside the BillboardGUI
+        -- Create a TextLabel inside the BillboardGui
         local textLabel = Instance.new("TextLabel")
         textLabel.Parent = billboard
         textLabel.Size = UDim2.new(1, 0, 1, 0) -- Fill the BillboardGui
@@ -23,16 +23,18 @@ local function createBillboardESP(object)
         textLabel.TextStrokeTransparency = 0.8 -- Optional: Add stroke to text for better visibility
         textLabel.TextSize = 20 -- Text size
 
-        -- Rainbow effect loop
-        while true do
-            -- Change text color to a rainbow cycle
-            for i = 0, 5 do
-                -- Cycle through rainbow colors
-                local color = Color3.fromHSV(i / 6, 1, 1)
-                textLabel.TextColor3 = color
-                wait(0.1) -- Delay for smooth transition
+        -- Rainbow effect loop (use coroutine to avoid freezing the game)
+        coroutine.wrap(function()
+            while true do
+                -- Change text color to a rainbow cycle
+                for i = 0, 5 do
+                    -- Cycle through rainbow colors
+                    local color = Color3.fromHSV(i / 6, 1, 1)
+                    textLabel.TextColor3 = color
+                    wait(0.1) -- Delay for smooth transition
+                end
             end
-        end
+        end)()
     end
 end
 
@@ -44,17 +46,17 @@ local function checkForPresent(presentName)
     end
 end
 
--- Check for existing presents when the script runs
-for _, presentName in ipairs(presents) do
-    checkForPresent(presentName)
-end
-
 -- Listen for new presents being added to the workspace
 game.Workspace.ChildAdded:Connect(function(child)
-    -- If a new present appears in the workspace, check if it's in the presents list
+    -- Check if the new child is one of the presents
     for _, presentName in ipairs(presents) do
         if child.Name == presentName then
             createBillboardESP(child) -- Apply ESP to the new present
         end
     end
 end)
+
+-- Check for existing presents when the script runs
+for _, presentName in ipairs(presents) do
+    checkForPresent(presentName)
+end
