@@ -1,0 +1,45 @@
+-- List of Present objects
+local presents = {"Present1", "Present2", "Present3", "Present4", "Present5"}
+
+-- Function to create a BillboardGUI
+local function createBillboardESP(object)
+    -- Check if the object exists in the workspace
+    if object and object.Parent == game.Workspace then
+        -- Create the BillboardGUI
+        local billboard = Instance.new("BillboardGui")
+        billboard.Adornee = object -- Attach the BillboardGui to the object
+        billboard.Parent = object
+        billboard.Size = UDim2.new(0, 200, 0, 50) -- Set size of the Billboard
+        billboard.StudsOffset = Vector3.new(0, 3, 0) -- Offset above the object
+        billboard.AlwaysOnTop = true -- Make sure it stays on top
+
+        -- Create a TextLabel inside the BillboardGUI
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Parent = billboard
+        textLabel.Size = UDim2.new(1, 0, 1, 0) -- Fill the BillboardGui
+        textLabel.BackgroundTransparency = 1 -- Make the background invisible
+        textLabel.Text = object.Name -- Display the object's name as text
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255) -- Default text color (white)
+        textLabel.TextStrokeTransparency = 0.8 -- Optional: Add stroke to text for better visibility
+        textLabel.TextSize = 20 -- Text size
+
+        -- Rainbow effect loop
+        while true do
+            -- Change text color to a rainbow cycle
+            for i = 0, 5 do
+                -- Cycle through rainbow colors
+                local color = Color3.fromHSV(i / 6, 1, 1)
+                textLabel.TextColor3 = color
+                wait(0.1) -- Delay for smooth transition
+            end
+        end
+    end
+end
+
+-- Loop through each present name in the list and create ESP for each
+for _, presentName in ipairs(presents) do
+    local present = game.Workspace:FindFirstChild(presentName)
+    if present then
+        createBillboardESP(present)
+    end
+end
