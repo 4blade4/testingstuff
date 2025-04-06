@@ -1,7 +1,7 @@
--- List of Present objects
+-- List of Present names to apply the ESP to
 local presents = {"Present1", "Present2", "Present3", "Present4", "Present5"}
 
--- Function to create a BillboardGUI
+-- Function to create a BillboardGUI with a rainbow effect
 local function createBillboardESP(object)
     -- Check if the object exists in the workspace
     if object and object.Parent == game.Workspace then
@@ -36,10 +36,25 @@ local function createBillboardESP(object)
     end
 end
 
--- Loop through each present name in the list and create ESP for each
-for _, presentName in ipairs(presents) do
+-- Function to check if the present exists and create ESP when it does
+local function checkForPresent(presentName)
     local present = game.Workspace:FindFirstChild(presentName)
     if present then
         createBillboardESP(present)
     end
 end
+
+-- Check for existing presents when the script runs
+for _, presentName in ipairs(presents) do
+    checkForPresent(presentName)
+end
+
+-- Listen for new presents being added to the workspace
+game.Workspace.ChildAdded:Connect(function(child)
+    -- If a new present appears in the workspace, check if it's in the presents list
+    for _, presentName in ipairs(presents) do
+        if child.Name == presentName then
+            createBillboardESP(child) -- Apply ESP to the new present
+        end
+    end
+end)
