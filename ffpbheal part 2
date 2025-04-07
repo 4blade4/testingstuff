@@ -1,0 +1,18 @@
+while true do
+-- Get the player's backpack
+local player = game.Players.LocalPlayer
+local backpack = player.Backpack
+
+-- Iterate through all items in the backpack
+for _, gear in ipairs(backpack:GetChildren()) do
+    -- Check if the gear has a part named "Hitbox"
+    local hitbox = gear:FindFirstChild("Hitbox")
+    if hitbox then
+        -- Change the size of the Hitbox to (100, 100, 100)
+        hitbox.Size = Vector3.new(100, 100, 100)
+        -- Make the Hitbox massless
+        hitbox.Massless = true
+    end
+end
+wait(0)
+end
