@@ -1,0 +1,14 @@
+while true do
+local args = {
+    [1] = 203
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("EquipTool"):FireServer(unpack(args))
+wait(1.5)
+local args = {
+    [1] = 203
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("UnequipTool"):FireServer(unpack(args))
+wait(1.5)
+end
