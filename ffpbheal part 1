@@ -4,11 +4,11 @@ local args = {
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("EquipTool"):FireServer(unpack(args))
-wait(1.5)
+wait(3)
 local args = {
     [1] = 203
 }
 
 game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("UnequipTool"):FireServer(unpack(args))
-wait(1.5)
+wait(0)
 end
