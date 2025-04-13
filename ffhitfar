@@ -1,0 +1,21 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+-- Loop through all descendants of the backpack
+for _, item in pairs(backpack:GetDescendants()) do
+    if item:IsA("BasePart") and item.Name == "Hitbox" then
+        item.Size = Vector3.new(100, 100, 100)
+        item.Massless = true
+    end
+end
+
+wait(1)
+
+while true do
+    local hitbox = workspace:WaitForChild("SOJ_LavaPatch"):WaitForChild("Hitbox")
+
+    hitbox.Size = Vector3.new(100, 100, 100)
+    hitbox.Massless = true
+wait(0)
+end
