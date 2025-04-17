@@ -1,0 +1,51 @@
+local Players = game:GetService("Players")
+
+-- Function to modify a part
+local function modifyPart(part)
+    if part and part:IsA("BasePart") then
+        part.Size = Vector3.new(200, 200, 200)
+        part.CanCollide = false
+        part.Anchored = true
+        part.Transparency = 1
+    end
+end
+
+-- Check if the instance is part of a player's character
+local function isPlayerDescendant(instance)
+    for _, player in pairs(Players:GetPlayers()) do
+        if player.Character and instance:IsDescendantOf(player.Character) then
+            return true
+        end
+    end
+    return false
+end
+
+-- Check if the instance is inside PassiveNPCs
+local function isInPassiveNPCs(instance)
+    local passiveFolder = workspace:FindFirstChild("PassiveNPCs")
+    return passiveFolder and instance:IsDescendantOf(passiveFolder)
+end
+
+-- Should we modify this object?
+local function shouldModify(obj)
+    return (obj.Name == "Hitbox" or obj.Name == "Torso")
+        and obj:IsA("BasePart")
+        and not isPlayerDescendant(obj)
+        and not isInPassiveNPCs(obj)
+end
+
+-- Modify existing parts
+for _, obj in pairs(workspace:GetDescendants()) do
+    if shouldModify(obj) then
+        modifyPart(obj)
+    end
+end
+
+-- Watch for new parts being added
+workspace.DescendantAdded:Connect(function(obj)
+    -- Give time for the object to be fully parented into the workspace
+    task.wait(0.1)
+    if shouldModify(obj) then
+        modifyPart(obj)
+    end
+end)
