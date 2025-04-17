@@ -1,0 +1,81 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+-- Time to stay at the present before returning (seconds)
+local delayTime = 1
+
+-- List of paths to check
+local presentPaths = {
+    "Present1",
+    "Present2",
+    "Present3",
+    "Present4",
+    "Present5",
+    "NPC_Giver"
+}
+
+-- Function to safely get a child from workspace like workspace.Present1.PP
+local function getPresentPP(presentName)
+    local presentFolder = workspace:FindFirstChild(presentName)
+    if presentFolder and presentFolder:FindFirstChild("PP") then
+        return presentFolder.PP
+    end
+    return nil
+end
+
+-- Function to check for the HumanoidRootPart in the NPC_Giver location
+local function getNPCGiverHRP()
+    local npcGiverFolder = workspace:FindFirstChild("PassiveNPCs")
+    if npcGiverFolder then
+        local npcGiver = npcGiverFolder:FindFirstChild("NPC_Giver")
+        if npcGiver and npcGiver:FindFirstChild("HumanoidRootPart") then
+            return npcGiver.HumanoidRootPart
+        end
+    end
+    return nil
+end
+
+-- Function to teleport
+local function teleportToPresentAndBack(target)
+    if not target or not target:IsA("BasePart") then return end
+
+    local originalCFrame = hrp.CFrame
+
+    -- Teleport to the present
+    hrp.CFrame = target.CFrame + Vector3.new(0, 3, 0)
+
+    task.wait(delayTime)
+
+    -- Return back
+    hrp.CFrame = originalCFrame
+end
+
+-- Loop through the present list and teleport to the first one found
+for _, presentName in ipairs(presentPaths) do
+    local target = getPresentPP(presentName)
+    if target then
+        teleportToPresentAndBack(target)
+        break -- only teleport to the first available present
+    end
+end
+
+-- Check if NPC_Giver's HumanoidRootPart is available
+local npcTarget = getNPCGiverHRP()
+if npcTarget then
+    teleportToPresentAndBack(npcTarget)
+end
+
+wait(0)
+workspace.Present1.InteractEvent:FireServer()
+wait(0)
+workspace.Present2.InteractEvent:FireServer()
+wait(0)
+workspace.Present3.InteractEvent:FireServer()
+wait(0)
+workspace.Present4.InteractEvent:FireServer()
+wait(0)
+workspace.Present5.InteractEvent:FireServer()
+wait(0)
+workspace.PassiveNPCs.NPC_Giver.InteractEvent:FireServer()
