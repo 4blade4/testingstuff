@@ -9,7 +9,8 @@ local AllowedNames = {
 }
 
 local ExclusionModelNames = {
-    "ItemDrop"
+    "ItemDrop",
+    "FireflyLocal"
 }
 
 local ExclusionFolderNames = {
