@@ -7,6 +7,7 @@ local function modifyPart(part)
         part.Size = Vector3.new(200, 200, 200)
         part.CanCollide = false
         part.Anchored = true
+        part.Transparency = 1
     end
 end
 
