@@ -34,3 +34,18 @@ character.ChildAdded:Connect(function(child)
 		end)
 	end
 end)
+
+wait(0.5)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+-- Loop through all descendants of the backpack
+for _, item in pairs(backpack:GetDescendants()) do
+    if item:IsA("BasePart") and item.Name == "Hitbox" then
+        item.Size = Vector3.new(400, 400, 400)
+        item.Massless = true
+        item.Transparency = 0.5
+    end
+end
