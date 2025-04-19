@@ -1,0 +1,36 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local function onToolEquipped(tool)
+	if tool.Name == "Pureblood Dagger" then
+		local hitbox = tool:FindFirstChild("Hitbox", true) -- true = recursive search
+		if hitbox then
+			print("Found Hitbox:", hitbox:GetFullName())
+			hitbox.Anchored = true
+
+			-- Look for any welds or constraints
+			for _, obj in ipairs(hitbox:GetDescendants()) do
+				if obj:IsA("Weld") or obj:IsA("WeldConstraint") or obj:IsA("Motor6D") or obj:IsA("ManualWeld") then
+					print("Destroying:", obj.ClassName, obj:GetFullName())
+					obj:Destroy()
+				end
+			end
+
+			-- Move hitbox to HumanoidRootPart
+			local hrp = character:WaitForChild("HumanoidRootPart")
+			hitbox.CFrame = hrp.CFrame
+		else
+			warn("Hitbox not found in tool")
+		end
+	end
+end
+
+-- Hook into character tools
+character.ChildAdded:Connect(function(child)
+	if child:IsA("Tool") then
+		child.Equipped:Connect(function()
+			onToolEquipped(child)
+		end)
+	end
+end)
