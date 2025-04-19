@@ -1,0 +1,64 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local function onToolEquipped(tool)
+	if tool.Name == "Pureblood Dagger" then
+		local hitbox = tool:FindFirstChild("Hitbox", true) -- true = recursive search
+		if hitbox then
+			print("Found Hitbox:", hitbox:GetFullName())
+			hitbox.Anchored = true
+			hitbox.CanCollide = false
+
+			-- Destroy existing constraints
+			for _, obj in ipairs(hitbox:GetDescendants()) do
+				if obj:IsA("Weld") or obj:IsA("WeldConstraint") or obj:IsA("Motor6D") or obj:IsA("ManualWeld") then
+					print("Destroying:", obj.ClassName, obj:GetFullName())
+					obj:Destroy()
+				end
+			end
+
+			local hrp = character:WaitForChild("HumanoidRootPart")
+
+			-- Start updating hitbox position every frame
+			local connection
+			connection = RunService.Heartbeat:Connect(function()
+				if tool.Parent ~= character or not hitbox or not hrp then
+					connection:Disconnect()
+					return
+				end
+
+				-- You can offset it here if needed: CFrame.new(0, 0, 0)
+				hitbox.CFrame = hrp.CFrame
+			end)
+
+		else
+			warn("Hitbox not found in tool")
+		end
+	end
+end
+
+-- Hook into character tools
+character.ChildAdded:Connect(function(child)
+	if child:IsA("Tool") then
+		child.Equipped:Connect(function()
+			onToolEquipped(child)
+		end)
+	end
+end)
+
+wait(0.5)
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+-- Loop through all descendants of the backpack
+for _, item in pairs(backpack:GetDescendants()) do
+    if item:IsA("BasePart") and item.Name == "Hitbox" then
+        item.Size = Vector3.new(400, 400, 400)
+        item.Massless = true
+        item.Transparency = 0.5
+    end
+end
