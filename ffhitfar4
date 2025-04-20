@@ -1,0 +1,24 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local backpack = player:WaitForChild("Backpack")
+
+-- Loop through all descendants of the backpack
+for _, item in pairs(backpack:GetDescendants()) do
+    if item:IsA("BasePart") and item.Name == "Hitbox" then
+        -- Modify part properties
+        item.Size = Vector3.new(200, 0.0001, 200)
+        item.Massless = true
+        item.Transparency = 0.5
+
+        -- Add rotation logic
+        local rotationSpeed = 1000 -- degrees per second (how fast it spins)
+        local runService = game:GetService("RunService")
+
+        -- Spin the hitbox continuously
+        runService.Heartbeat:Connect(function(dt)
+            local currentRotation = item.Rotation
+            -- Update the rotation around the Y-axis (for spinning)
+            item.Rotation = currentRotation + Vector3.new(0, 0, rotationSpeed * dt)
+        end)
+    end
+end
