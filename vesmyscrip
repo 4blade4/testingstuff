@@ -1,0 +1,248 @@
+local player = game.Players.LocalPlayer
+local mouse = player:GetMouse()
+local tortoiseFolder = game:GetService("Workspace").placeFolders.entityManifestCollection
+local itemsFolder = game:GetService("Workspace").placeFolders.items
+local tortoiseParts = {}
+local itemParts = {}
+local currentSphere = nil
+local isTeleportationEnabled = true
+local notification = nil
+local selectedNames = {}
+
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+-- Function to create a grey sphere
+local function createSphere(position)
+    local sphere = Instance.new("Part")
+    sphere.Shape = Enum.PartType.Ball
+    sphere.Size = Vector3.new(2, 2, 2)
+    sphere.Color = Color3.fromRGB(169, 169, 169)
+    sphere.Position = position
+    sphere.Anchored = true
+    sphere.CanCollide = false
+    sphere.Parent = game.Workspace
+    return sphere
+end
+
+-- Function to modify size and transparency of tortoise parts
+local function modifyTortoisePart(part)
+    part.Size = Vector3.new(30, 30, 30)
+    part.Transparency = 0.4
+end
+
+-- Function to get all player names
+local function getPlayerNames()
+    local playerNames = {}
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        table.insert(playerNames, player.Name)
+    end
+    return playerNames
+end
+
+-- Function to teleport parts to the sphere's position
+local function teleportPartsToSphere(sphere, parts)
+    for _, part in ipairs(parts) do
+        if part and sphere then
+            part.CFrame = CFrame.new(sphere.Position)
+        end
+    end
+end
+
+-- Function to gather all parts from the tortoiseFolder
+local function getTortoiseParts()
+    local playerNames = getPlayerNames()
+    tortoiseParts = {}
+
+    for _, part in ipairs(tortoiseFolder:GetChildren()) do
+        if #selectedNames == 1 and selectedNames[1] == "All" then
+            if not table.find(playerNames, part.Name) then
+                modifyTortoisePart(part)
+                table.insert(tortoiseParts, part)
+            end
+        else
+            for _, name in ipairs(selectedNames) do
+                if part.Name == name and not table.find(playerNames, part.Name) then
+                    modifyTortoisePart(part)
+                    table.insert(tortoiseParts, part)
+                end
+            end
+        end
+    end
+end
+
+-- Function to gather all parts from the itemsFolder
+local function getItemParts()
+    itemParts = {}
+    for _, part in ipairs(itemsFolder:GetChildren()) do
+        table.insert(itemParts, part)
+    end
+end
+
+-- Function to handle newly added parts in the tortoiseFolder
+local function onTortoisePartAdded(part)
+    if #selectedNames == 1 and selectedNames[1] == "All" then
+        if not table.find(getPlayerNames(), part.Name) then
+            modifyTortoisePart(part)
+            table.insert(tortoiseParts, part)
+            if currentSphere then
+                part.CFrame = CFrame.new(currentSphere.Position)
+            end
+        end
+    else
+        for _, name in ipairs(selectedNames) do
+            if part.Name == name then
+                modifyTortoisePart(part)
+                table.insert(tortoiseParts, part)
+                if currentSphere then
+                    part.CFrame = CFrame.new(currentSphere.Position)
+                end
+            end
+        end
+    end
+end
+
+-- Function to handle newly added parts in the itemsFolder
+local function onItemPartAdded(part)
+    table.insert(itemParts, part)
+    if currentSphere then
+        part.CFrame = CFrame.new(currentSphere.Position)
+    end
+end
+
+-- Listen for new parts being added
+tortoiseFolder.ChildAdded:Connect(onTortoisePartAdded)
+itemsFolder.ChildAdded:Connect(onItemPartAdded)
+
+-- Function to show a notification
+local function showNotification(message)
+    if notification then
+        notification:Destroy()
+    end
+    notification = Instance.new("Message")
+    notification.Text = message
+    notification.Parent = game.CoreGui
+    wait(3)
+    notification:Destroy()
+end
+
+-- Right bracket key event handler
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+
+    if input.KeyCode == Enum.KeyCode.RightBracket then
+        if isTeleportationEnabled then
+            if currentSphere then
+                currentSphere:Destroy()
+            end
+
+            local targetPosition = mouse.Hit.p
+            currentSphere = createSphere(targetPosition)
+
+            getTortoiseParts()
+            getItemParts()
+
+            RunService.RenderStepped:Connect(function()
+                if currentSphere then
+                    if #tortoiseParts > 0 then
+                        teleportPartsToSphere(currentSphere, tortoiseParts)
+                    end
+                    if #itemParts > 0 then
+                        teleportPartsToSphere(currentSphere, itemParts)
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+-- Left bracket key event handler to toggle teleportation
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+
+    if input.KeyCode == Enum.KeyCode.LeftBracket then
+        isTeleportationEnabled = not isTeleportationEnabled
+        if isTeleportationEnabled then
+            showNotification("Teleportation ENABLED")
+        else
+            showNotification("Teleportation DISABLED")
+            if currentSphere then
+                currentSphere:Destroy()
+            end
+            tortoiseParts = {}
+            itemParts = {}
+        end
+    end
+end)
+
+-- Create GUI for selecting parts in the tortoiseFolder
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local textBox = Instance.new("TextBox")
+textBox.Parent = screenGui
+textBox.Size = UDim2.new(0, 400, 0, 50)
+textBox.Position = UDim2.new(0.5, -200, 0.9, -25)
+textBox.Text = ""
+textBox.PlaceholderText = "Enter part names (comma separated or 'All')"
+textBox.ClearTextOnFocus = true
+
+-- Create a scrolling frame to display the names of all parts in the tortoiseFolder
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Parent = screenGui
+scrollFrame.Size = UDim2.new(0, 400, 0, 200)
+scrollFrame.Position = UDim2.new(0.5, -200, 0.5, -100)
+scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollFrame.ScrollBarThickness = 10
+
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.Parent = scrollFrame
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- Function to populate the scrollable list with part names
+local function populatePartList()
+    -- Clear the existing list in case of updates
+    for _, child in ipairs(scrollFrame:GetChildren()) do
+        if child:IsA("TextLabel") then
+            child:Destroy()
+        end
+    end
+    
+    -- Populate the scroll list with part names from the tortoiseFolder
+    for _, part in ipairs(tortoiseFolder:GetChildren()) do
+        local label = Instance.new("TextLabel")
+        label.Text = part.Name
+        label.Size = UDim2.new(1, 0, 0, 30)
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.BackgroundTransparency = 1
+        label.Parent = scrollFrame
+    end
+
+    -- Adjust canvas size to fit the content
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, #tortoiseFolder:GetChildren() * 30)
+end
+
+-- Call the populatePartList to load part names into the UI
+populatePartList()
+
+-- Set Name button to set selected parts
+local button = Instance.new("TextButton")
+button.Parent = screenGui
+button.Size = UDim2.new(0, 100, 0, 50)
+button.Position = UDim2.new(0.5, -50, 0.85, -25)
+button.Text = "Set Names"
+
+button.MouseButton1Click:Connect(function()
+    local inputText = textBox.Text
+    if inputText ~= "" then
+        -- Split input text by commas and trim spaces
+        selectedNames = {}
+        for name in string.gmatch(inputText, '([^,]+)') do
+            table.insert(selectedNames, name:match("^%s*(.-)%s*$")) -- Trim spaces
+        end
+        getTortoiseParts()
+        showNotification("Now teleporting parts: " .. table.concat(selectedNames, ", "))
+    else
+        showNotification("Please enter part names.")
+    end
+end)
