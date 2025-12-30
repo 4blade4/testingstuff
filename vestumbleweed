@@ -1,0 +1,38 @@
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local targetPosition = nil -- fixed position where Tumbleweeds teleport
+local teleportActive = false
+
+-- Press T to set the teleport location
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.T then
+        -- Set the fixed position to where the mouse is right now
+        targetPosition = mouse.Hit.Position
+        teleportActive = true
+    end
+end)
+
+-- Continuously teleport Tumbleweeds to the fixed position
+RunService.RenderStepped:Connect(function()
+    if teleportActive and targetPosition then
+        for _, obj in pairs(Workspace:GetDescendants()) do
+            if obj.Name:lower() == "tumbleweed" then
+                if obj:IsA("Model") then
+                    if obj.PrimaryPart then
+                        obj:SetPrimaryPartCFrame(CFrame.new(targetPosition))
+                    end
+                elseif obj:IsA("BasePart") then
+                    obj.CFrame = CFrame.new(targetPosition)
+                end
+            end
+        end
+    end
+end)
