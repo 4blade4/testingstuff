@@ -1,0 +1,36 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Try to get character
+local character = player.Character or player.CharacterAdded:Wait()
+local fallbackModelName = "YOURNAME"
+
+-- Find entityManifestCollection anywhere
+local entityManifestCollection = game:FindFirstChild("entityManifestCollection", true)
+if not entityManifestCollection then
+	warn("entityManifestCollection not found")
+	return
+end
+
+-- Determine what to exclude
+local function isExcluded(instance)
+	-- Prefer character model if it exists
+	if character and character.Parent then
+		return instance:IsDescendantOf(character)
+	end
+
+	-- Fallback: exclude model named "Blade"
+	local bladeModel = game:FindFirstChild(fallbackModelName, true)
+	if bladeModel then
+		return instance:IsDescendantOf(bladeModel)
+	end
+
+	return false
+end
+
+-- Rename all "state" instances except excluded ones
+for _, obj in ipairs(entityManifestCollection:GetDescendants()) do
+	if obj.Name == "state" and not isExcluded(obj) then
+		obj.Name = "stateFear"
+	end
+end
