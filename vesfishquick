@@ -1,0 +1,26 @@
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local camera = workspace:WaitForChild("Camera")
+
+-- Function to teleport all SweetSpots
+local function teleportSweetSpots(position)
+	for _, obj in ipairs(camera:GetChildren()) do
+		if obj.Name == "SweetSpot" and obj:IsA("BasePart") then
+			obj.CFrame = CFrame.new(position)
+		end
+	end
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	
+	if input.UserInputType == Enum.UserInputType.MouseButton2 then
+		if mouse.Hit then
+			teleportSweetSpots(mouse.Hit.Position)
+		end
+	end
+end)
