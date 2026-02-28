@@ -1,0 +1,19 @@
+local TARGET_SIZE = Vector3.new(100, 0.115, 100)
+
+local function resizeIfMatch(instance)
+	if instance:IsA("BasePart") then
+		if instance.Name == "sweetspot" or instance.Name == "sweetspot_hitbox" then
+			instance.Size = TARGET_SIZE
+		end
+	end
+end
+
+-- Check existing parts
+for _, descendant in ipairs(workspace:GetDescendants()) do
+	resizeIfMatch(descendant)
+end
+
+-- Detect new parts added later
+workspace.DescendantAdded:Connect(function(instance)
+	resizeIfMatch(instance)
+end)
