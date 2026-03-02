@@ -1,0 +1,42 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+-- Keep track of already active loops to avoid duplicates
+local activeParts = {}
+
+local function setupSweetspot(part)
+	if not part:IsA("BasePart") then return end
+	if part.Name ~= "sweetspot_hitbox" then return end
+	if activeParts[part] then return end -- already processing
+
+	-- Add ClickDetector if missing
+	local clickDetector = part:FindFirstChildOfClass("ClickDetector")
+	if not clickDetector then
+		clickDetector = Instance.new("ClickDetector")
+		clickDetector.MaxActivationDistance = math.huge
+		clickDetector.Parent = part
+	end
+
+	activeParts[part] = true
+
+	-- Fire the click repeatedly, stops automatically if part is removed
+	task.spawn(function()
+		while part.Parent and clickDetector.Parent do
+			fireclickdetector(clickDetector)
+			task.wait(0.1) -- fire every 0.1s
+		end
+		activeParts[part] = nil -- clean up
+	end)
+end
+
+-- Handle existing sweetspot_hitboxes
+for _, obj in ipairs(workspace:GetDescendants()) do
+	setupSweetspot(obj)
+end
+
+-- Handle new sweetspot_hitboxes added in the future
+workspace.DescendantAdded:Connect(function(obj)
+	setupSweetspot(obj)
+end)
