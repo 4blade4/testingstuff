@@ -1,0 +1,42 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local spawnFolder = workspace:WaitForChild("placeFolders"):WaitForChild("miningNodeSpawns")
+
+-- Create a 2x2 ball
+local ball = Instance.new("Part")
+ball.Size = Vector3.new(2,2,2)
+ball.Shape = Enum.PartType.Ball
+ball.Anchored = true
+ball.CanCollide = false
+ball.Transparency = 0.5
+ball.Color = Color3.new(0,1,0) -- green
+ball.Parent = workspace
+
+-- Update ball position to follow cursor in 3D
+RunService.RenderStepped:Connect(function()
+    if mouse.Hit then
+        ball.Position = mouse.Hit.Position
+    end
+end)
+
+-- Check for contact with silver nodes
+RunService.Heartbeat:Connect(function()
+    for _, part in ipairs(spawnFolder:GetChildren()) do
+        if part.Name == "silver" then
+            local distance = (ball.Position - part.Position).Magnitude
+            if distance <= (part.Size.Magnitude/2 + ball.Size.Magnitude/2) then
+                -- Ball is "touching" the silver
+                ReplicatedStorage.network.RemoteFunction.playerRequest_mining_damageNode:InvokeServer({
+                    spawnPart = part,
+                    isSweetSpot = false
+                })
+            end
+        end
+    end
+end)
