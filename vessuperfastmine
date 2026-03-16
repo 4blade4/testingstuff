@@ -14,7 +14,7 @@ ball.Size = Vector3.new(2,2,2)
 ball.Shape = Enum.PartType.Ball
 ball.Anchored = true
 ball.CanCollide = false
-ball.Transparency = 0.5
+ball.Transparency = 0.7
 ball.Color = Color3.new(0,1,0) -- green
 ball.Parent = workspace
 
@@ -34,7 +34,7 @@ RunService.Heartbeat:Connect(function()
                 -- Ball is "touching" the silver
                 ReplicatedStorage.network.RemoteFunction.playerRequest_mining_damageNode:InvokeServer({
                     spawnPart = part,
-                    isSweetSpot = false
+                    isSweetSpot = true
                 })
             end
         end
