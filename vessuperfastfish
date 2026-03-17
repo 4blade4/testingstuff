@@ -1,0 +1,22 @@
+local camera = workspace.CurrentCamera
+
+while true do
+    local fishingBob = camera:FindFirstChild("FishingBob")
+
+    if fishingBob then
+        -- Loop while FishingBob exists
+        while camera:FindFirstChild("FishingBob") do
+            fishingBob = camera:FindFirstChild("FishingBob")
+
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v.Name == "SweetSpot" and v:IsA("BasePart") then
+                    v.CFrame = fishingBob.CFrame
+                end
+            end
+
+            task.wait()
+        end
+    end
+
+    task.wait(0.2) -- wait before checking again
+end
