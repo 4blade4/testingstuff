@@ -1,0 +1,40 @@
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+local terrain = workspace.Terrain
+
+local WATER_SIZE = Vector3.new(300, 5, 300)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	
+	if input.KeyCode == Enum.KeyCode.RightBracket then
+		if mouse.Hit then
+			local position = mouse.Hit.Position
+			
+			-- Create water block centered at mouse position
+			terrain:FillBlock(
+				CFrame.new(position),
+				WATER_SIZE,
+				Enum.Material.Water
+			)
+		end
+	end
+end)
+
+wait(0.5)
+
+local camera = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+
+RunService.Heartbeat:Connect(function()
+    local fishingBob = camera:FindFirstChild("FishingBob")
+    if not fishingBob then return end
+
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v.Name == "SweetSpot" and v:IsA("BasePart") then
+            v.CFrame = fishingBob.CFrame
+        end
+    end
+end)
