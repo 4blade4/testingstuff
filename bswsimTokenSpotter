@@ -1,0 +1,57 @@
+local TARGET_COLOR = Color3.fromRGB(110, 244, 240)
+
+local function addCirclePart(target)
+    if target:IsA("BasePart") 
+        and target.Name == "C" 
+        and target.Color == TARGET_COLOR then
+
+        -- Prevent duplicates
+        if target:FindFirstChild("CircleAttachment") then
+            return
+        end
+
+        -- Create the circle part
+        local circle = Instance.new("Part")
+        circle.Name = "CircleAttachment"
+        circle.Shape = Enum.PartType.Cylinder
+        circle.Size = Vector3.new(1, 10, 10)
+        circle.Transparency = 0
+        circle.Color = TARGET_COLOR
+        circle.Anchored = false
+        circle.CanCollide = false
+
+        -- Position on top
+        local offset = Vector3.new(0, (target.Size.Y / 2) + (circle.Size.Y / 2), 0)
+        circle.CFrame = target.CFrame + offset
+
+        circle.Parent = target
+
+        -- Copy decal to correct faces
+        local decal = target:FindFirstChildOfClass("Decal")
+        if decal then
+            local d1 = decal:Clone()
+            d1.Face = Enum.NormalId.Left
+            d1.Parent = circle
+
+            local d2 = decal:Clone()
+            d2.Face = Enum.NormalId.Right
+            d2.Parent = circle
+        end
+
+        -- Weld it
+        local weld = Instance.new("WeldConstraint")
+        weld.Part0 = target
+        weld.Part1 = circle
+        weld.Parent = circle
+    end
+end
+
+-- Existing parts
+for _, obj in ipairs(game:GetDescendants()) do
+    addCirclePart(obj)
+end
+
+-- New parts
+game.DescendantAdded:Connect(function(obj)
+    addCirclePart(obj)
+end)
