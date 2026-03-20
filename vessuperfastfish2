@@ -32,7 +32,7 @@ RunService.Heartbeat:Connect(function()
     local fishingBob = camera:FindFirstChild("FishingBob")
     if not fishingBob then return end
 
-    for _, v in ipairs(workspace:GetDescendants()) do
+    for _, v in ipairs(workspace.Camera:GetDescendants()) do
         if v.Name == "SweetSpot" and v:IsA("BasePart") then
             v.CFrame = fishingBob.CFrame
         end
